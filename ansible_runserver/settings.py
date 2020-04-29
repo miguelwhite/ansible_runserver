@@ -131,3 +131,22 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
+
+ANSIBLE_DIR = ''  # path to dir with ansible playbooks
+ANSIBLE_DIR_IS_GIT_REPO = False  # if True, process_jobs will checkout and pull specified branch before running the playbook
+ANSIBLE_DIR_GIT_BRANCH = 'master'
+ANSIBLE_BIN = ''  # path to ansible binary
+ANSIBLE_VAULT_FILE = os.environ.get('ANSIBLE_VAULT_PASSWORD_FILE')  # path to ansible vault password file
+
+AWS_IAM_AUTH_ALLOWED_ARN_USER_MAPS = []
+"""
+This dictionary maps allowed AWS IAM roles to django users
+you have created.
+
+AWS_IAM_AUTH_ALLOWED_ARN_USER_MAPS = [
+    {
+        'arn': 'arn:aws:iam::123456789:role/myrole',
+        'username': 'my_django_user'
+    }
+]
+"""
