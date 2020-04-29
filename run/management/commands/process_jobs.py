@@ -49,6 +49,10 @@ class Command(BaseCommand):
                     else:
                         job.log = output
                     logging.info('Job id {}: playbook run end'.format(job.id))
+                except subprocess.CalledProcessError as e:
+                    logging.error('Job id {}: {}'.format(job.id, str(e)))
+                    job.log = e.output.decode("utf-8")
+                    job.status = 'ERROR'
                 except Exception as e:
                     logging.error('Job id {}: {}'.format(job.id, str(e)))
                     job.log = 'Error processing job. Please check the run server.'
