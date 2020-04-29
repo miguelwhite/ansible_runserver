@@ -35,6 +35,7 @@ class Command(BaseCommand):
                         run_command = ';'.join([
                             'git checkout .',
                             'git checkout {}'.format(settings.ANSIBLE_DIR_GIT_BRANCH),
+                            'git pull origin {}'.format(settings.ANSIBLE_DIR_GIT_BRANCH),
                             run_command
                         ])
                     output = subprocess.check_output(
