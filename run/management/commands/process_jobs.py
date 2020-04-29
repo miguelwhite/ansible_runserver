@@ -3,7 +3,6 @@ from run.models import Job
 import subprocess
 import logging
 import time
-import daemon
 import sys
 from django.conf import settings
 
