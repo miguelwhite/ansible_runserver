@@ -11,7 +11,7 @@ class Playbook(models.Model):
     playbook_dir = models.CharField(max_length=255, default='playbooks', blank=True, null=True)
     inventory = models.CharField(max_length=255)
     tags = models.ManyToManyField('Tag', blank=True)
-    verbosity = models.IntegerField(choices=tuple(range(0, 5)), default=0)
+    verbosity = models.IntegerField(choices=(0, 1, 2, 3, 4), default=0)
 
     @property
     def run_command(self):
