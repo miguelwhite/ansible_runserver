@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 import uuid
 
 
@@ -11,7 +12,10 @@ class Playbook(models.Model):
     playbook_dir = models.CharField(max_length=255, default='playbooks', blank=True, null=True)
     inventory = models.CharField(max_length=255)
     tags = models.ManyToManyField('Tag', blank=True)
-    verbosity = models.IntegerField(choices=(0, 1, 2, 3, 4), default=0)
+    verbosity = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(4)],
+        default=0
+    )
 
     @property
     def run_command(self):
