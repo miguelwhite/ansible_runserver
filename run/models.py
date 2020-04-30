@@ -11,6 +11,7 @@ class Playbook(models.Model):
     playbook_dir = models.CharField(max_length=255, default='playbooks', blank=True, null=True)
     inventory = models.CharField(max_length=255)
     tags = models.ManyToManyField('Tag', blank=True)
+    verbosity = models.IntegerField(choices=tuple(range(0, 5)), default=0)
 
     @property
     def run_command(self):
@@ -23,15 +24,19 @@ class Playbook(models.Model):
             vault_file = '--vault-password-file {}'\
                 .format(settings.ANSIBLE_VAULT_FILE)
 
+        if self.verbosity > 0:
+            verbosity = '-' + ('v' * self.verbosity)
+
         return ' '.join([
-           '{}/ansible-playbook'.format(settings.ANSIBLE_BIN_DIR),
+            '{}/ansible-playbook'.format(settings.ANSIBLE_BIN_DIR),
             vault_file,
             '-i {}/inventories/{}'.format(
                 settings.ANSIBLE_PROJECT_DIR, self.inventory),
             '{}/{}/{}'.format(
-                settings.ANSIBLE_PROJECT_DIR, self.playbook_dir, self.filename),
+                settings.ANSIBLE_PROJECT_DIR,
+                self.playbook_dir, self.filename),
             tags,
-            '-vvv'
+            verbosity
         ])
 
     def __str__(self):
