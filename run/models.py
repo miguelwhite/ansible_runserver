@@ -28,6 +28,7 @@ class Playbook(models.Model):
             vault_file = '--vault-password-file {}'\
                 .format(settings.ANSIBLE_VAULT_FILE)
 
+        verbosity = ''
         if self.verbosity > 0:
             verbosity = '-' + ('v' * self.verbosity)
 
