@@ -137,6 +137,7 @@ ANSIBLE_PROJECT_DIR_IS_GIT_REPO = False  # if True, process_jobs will checkout a
 ANSIBLE_PROJECT_DIR_GIT_BRANCH = 'master'
 ANSIBLE_BIN_DIR = ''  # path to ansible binary
 ANSIBLE_VAULT_FILE = os.environ.get('ANSIBLE_VAULT_PASSWORD_FILE')  # path to ansible vault password file
+ANSIBLE_PROCESS_JOB_FREQUENCY = 60  # Time in seconds between each process jobs query
 
 AWS_IAM_AUTH_ALLOWED_ARN_USER_MAPS = []
 """

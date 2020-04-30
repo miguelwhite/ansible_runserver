@@ -64,7 +64,7 @@ class Command(BaseCommand):
         while True:
             try:
                 self._process_jobs()
-                time.sleep(60)
+                time.sleep(settings.ANSIBLE_PROCESS_JOBS_FREQUENCY)
             except KeyboardInterrupt:
                 print('Exiting...')
                 sys.exit()
