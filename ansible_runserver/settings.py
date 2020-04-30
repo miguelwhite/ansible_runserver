@@ -132,10 +132,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-ANSIBLE_DIR = ''  # path to dir with ansible playbooks
-ANSIBLE_DIR_IS_GIT_REPO = False  # if True, process_jobs will checkout and pull specified branch before running the playbook
-ANSIBLE_DIR_GIT_BRANCH = 'master'
-ANSIBLE_BIN = ''  # path to ansible binary
+ANSIBLE_PROJECT_DIR = ''  # path to dir with ansible playbooks
+ANSIBLE_PROJECT_DIR_IS_GIT_REPO = False  # if True, process_jobs will checkout and pull specified branch before running the playbook
+ANSIBLE_PROJECT_DIR_GIT_BRANCH = 'master'
+ANSIBLE_BIN_DIR = ''  # path to ansible binary
 ANSIBLE_VAULT_FILE = os.environ.get('ANSIBLE_VAULT_PASSWORD_FILE')  # path to ansible vault password file
 
 AWS_IAM_AUTH_ALLOWED_ARN_USER_MAPS = []

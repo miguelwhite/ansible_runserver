@@ -30,16 +30,16 @@ class Command(BaseCommand):
                         'Job id {}: playbook run start'.format(job.id)
                     )
                     run_command = job.playbook.run_command
-                    if settings.ANSIBLE_DIR_IS_GIT_REPO:
+                    if settings.ANSIBLE_PROJECT_DIR_IS_GIT_REPO:
                         run_command = ';'.join([
                             'git checkout .',
-                            'git checkout {}'.format(settings.ANSIBLE_DIR_GIT_BRANCH),
-                            'git pull origin {}'.format(settings.ANSIBLE_DIR_GIT_BRANCH),
+                            'git checkout {}'.format(settings.ANSIBLE_PROJECT_DIR_GIT_BRANCH),
+                            'git pull origin {}'.format(settings.ANSIBLE_PROJECT_DIR_GIT_BRANCH),
                             run_command
                         ])
                     output = subprocess.check_output(
                         run_command,
-                        cwd=settings.ANSIBLE_DIR,
+                        cwd=settings.ANSIBLE_PROJECT_DIR,
                         stderr=subprocess.STDOUT,
                         shell=True
                     )

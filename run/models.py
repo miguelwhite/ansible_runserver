@@ -24,12 +24,12 @@ class Playbook(models.Model):
                 .format(settings.ANSIBLE_VAULT_FILE)
 
         return ' '.join([
-            settings.ANSIBLE_BIN,
+           '{}/ansible-playbook'.format(settings.ANSIBLE_BIN_DIR),
             vault_file,
             '-i {}/inventories/{}'.format(
-                settings.ANSIBLE_DIR, self.inventory),
+                settings.ANSIBLE_PROJECT_DIR, self.inventory),
             '{}/{}/{}'.format(
-                settings.ANSIBLE_DIR, self.playbook_dir, self.filename),
+                settings.ANSIBLE_PROJECT_DIR, self.playbook_dir, self.filename),
             tags,
             '-vvv'
         ])
