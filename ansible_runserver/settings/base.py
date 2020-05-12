@@ -16,17 +16,14 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+# SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # Application definition
 
@@ -76,12 +73,12 @@ WSGI_APPLICATION = 'ansible_runserver.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
 
 
 # Password validation
@@ -131,23 +128,3 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
-
-ANSIBLE_PROJECT_DIR = ''  # path to dir with ansible playbooks
-ANSIBLE_PROJECT_DIR_IS_GIT_REPO = False  # if True, process_jobs will checkout and pull specified branch before running the playbook
-ANSIBLE_PROJECT_DIR_GIT_BRANCH = 'master'
-ANSIBLE_BIN_DIR = ''  # path to ansible binary
-ANSIBLE_VAULT_FILE = os.environ.get('ANSIBLE_VAULT_PASSWORD_FILE')  # path to ansible vault password file
-ANSIBLE_PROCESS_JOBS_FREQUENCY = 60  # Time in seconds between each process jobs query
-
-AWS_IAM_AUTH_ALLOWED_ARN_USER_MAPS = []
-"""
-This dictionary maps allowed AWS IAM roles to django users
-you have created.
-
-AWS_IAM_AUTH_ALLOWED_ARN_USER_MAPS = [
-    {
-        'arn': 'arn:aws:iam::123456789:role/myrole',
-        'username': 'my_django_user'
-    }
-]
-"""
