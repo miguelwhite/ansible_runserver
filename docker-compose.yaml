@@ -1,0 +1,63 @@
+version: "3"
+networks:
+  default:
+services:
+  postgres:
+    image: postgres:12
+    ports:
+      - '5432:5432'
+    networks:
+      - default
+    environment:
+      POSTGRES_USER: arse
+      POSTGRES_PASSWORD: arse
+      POSTGRES_DB: arse_dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arse -w arse"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  ansiblesite:
+    image: python:3.7
+    command: >
+      /bin/bash -lc "cd /srv/
+      && git clone git@github.com:civisanalytics/ansiblesite.git"
+    volumes:
+      - /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock
+      - ~/.ssh/known_hosts:/root/.ssh/known_hosts
+    environment:
+      SSH_AUTH_SOCK: /run/host-services/ssh-auth.sock
+    tty: true
+  ansible_runserver:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    image: ansible_runserver:latest
+    depends_on:
+      - postgres
+    networks:
+      - default
+    ports:
+      - '8000:8000'
+    command: >
+      /bin/bash -lc 'apt-get update && apt-get install -y -q --no-install-recommends netcat;
+      while ! nc -z postgres 5432; do sleep 1; done;
+      find . -type f -wholename "*migrations/*.py" -not -name "__init__.py" -delete;
+      ./manage.py makemigrations --settings=ansible_runserver.settings.dev
+      && ./manage.py migrate --settings=ansible_runserver.settings.dev;
+      ./manage.py shell --settings=ansible_runserver.settings.dev -c "from django.contrib.auth.models import User;
+      User.objects.create_superuser(\"admin\", \"admin@example.com\", \"admin\")" > /dev/null 2>&1 || true;
+      ./manage.py runserver --settings=ansible_runserver.settings.dev 0.0.0.0:8000'
+  process_jobs:
+    image: ansible_runserver:latest
+    depends_on:
+      - ansible_runserver
+      - ansiblesite
+      - postgres
+    networks:
+      - default
+    command: /bin/bash -lc "sleep 10s; ./manage.py process_jobs --settings=ansible_runserver.settings.dev"
+    volumes:
+      - ansiblesite:/srv/ansiblesite
+volumes:
+  ansiblesite:
