@@ -1,15 +1,29 @@
 from django.core.management.base import BaseCommand, CommandError
 from run.models import Job
+from django.conf import settings
+
 import subprocess
 import logging
 import time
 import sys
-from django.conf import settings
+import signal
 
 logging.basicConfig(
      format='%(asctime)s %(levelname)-8s %(message)s',
      level=logging.INFO,
      datefmt='%Y-%m-%d %H:%M:%S')
+
+
+class SigtermHandler:
+    kill_now = False
+
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+    def exit_gracefully(self, signum, frame):
+        print('Exiting gracefully...')
+        self.kill_now = True
 
 
 class Command(BaseCommand):
@@ -30,13 +44,6 @@ class Command(BaseCommand):
                         'Job id {}: playbook run start'.format(job.id)
                     )
                     run_command = job.playbook.run_command
-                    if settings.ANSIBLE_PROJECT_DIR_IS_GIT_REPO:
-                        run_command = ';'.join([
-                            'git checkout .',
-                            'git checkout {}'.format(settings.ANSIBLE_PROJECT_DIR_GIT_BRANCH),
-                            'git pull origin {}'.format(settings.ANSIBLE_PROJECT_DIR_GIT_BRANCH),
-                            run_command
-                        ])
                     output = subprocess.check_output(
                         run_command,
                         cwd=settings.ANSIBLE_PROJECT_DIR,
@@ -61,7 +68,8 @@ class Command(BaseCommand):
                     job.save()
 
     def handle(self, *args, **options):
-        while True:
+        sigterm_handler = SigtermHandler()
+        while not sigterm_handler.kill_now:
             try:
                 self._process_jobs()
                 time.sleep(settings.ANSIBLE_PROCESS_JOBS_FREQUENCY)
