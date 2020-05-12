@@ -12,7 +12,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class PlaybookSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Playbook
-        fields = ['id', 'name', 'run_command']
+        fields = ['uuid', 'name', 'run_command']
 
 
 class JobSerializer(serializers.HyperlinkedModelSerializer):
@@ -25,7 +25,7 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Job
-        fields = ['id', 'playbook', 'requested_by', 'created_on', 'status', 'log']
+        fields = ['uuid', 'playbook', 'requested_by', 'created_on', 'status', 'log']
         read_only_fields = ['status', 'log']
 
     def validate_requested_by(self, requested_by):

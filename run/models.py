@@ -5,11 +5,13 @@ import uuid
 
 
 class Playbook(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(primary_key=True,
+                            default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
     filename = models.CharField(max_length=255)
-    playbook_dir = models.CharField(max_length=255, default='playbooks', blank=True, null=True)
+    playbook_dir = models.CharField(max_length=255,
+                                    default='playbooks', blank=True, null=True)
     inventory = models.CharField(max_length=255)
     tags = models.ManyToManyField('Tag', blank=True)
     verbosity = models.PositiveIntegerField(
@@ -56,7 +58,8 @@ class Tag(models.Model):
 
 
 class Job(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(primary_key=True,
+                            default=uuid.uuid4, editable=False)
     playbook = models.ForeignKey('Playbook', on_delete=models.PROTECT)
     requested_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
