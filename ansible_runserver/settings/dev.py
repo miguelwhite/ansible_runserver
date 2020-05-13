@@ -21,8 +21,8 @@ DATABASES = {
 
 }
 
-ANSIBLE_PROJECT_DIR = ''  # path to dir with ansible playbooks
-ANSIBLE_BIN_DIR = ''  # path to ansible binary
+ANSIBLE_PROJECT_DIR = '/srv/ansiblesite'  # path to dir with ansible playbooks
+ANSIBLE_BIN_DIR = '/usr/local/bin/'  # path to ansible binary
 ANSIBLE_VAULT_FILE = os.environ.get('ANSIBLE_VAULT_PASSWORD_FILE')  # path to ansible vault password file
 ANSIBLE_PROCESS_JOBS_FREQUENCY = 60  # Time in seconds between each process jobs query
 

@@ -23,8 +23,9 @@ services:
       /bin/bash -lc "cd /srv/
       && git clone git@github.com:civisanalytics/ansiblesite.git"
     volumes:
-      - /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa
       - ~/.ssh/known_hosts:/root/.ssh/known_hosts
+      - ansiblesite:/srv/ansiblesite
     environment:
       SSH_AUTH_SOCK: /run/host-services/ssh-auth.sock
     tty: true
@@ -43,11 +44,14 @@ services:
       /bin/bash -lc 'apt-get update && apt-get install -y -q --no-install-recommends netcat;
       while ! nc -z postgres 5432; do sleep 1; done;
       find . -type f -wholename "*migrations/*.py" -not -name "__init__.py" -delete;
-      ./manage.py makemigrations --settings=ansible_runserver.settings.dev
-      && ./manage.py migrate --settings=ansible_runserver.settings.dev;
-      ./manage.py shell --settings=ansible_runserver.settings.dev -c "from django.contrib.auth.models import User;
+      ./manage.py makemigrations && ./manage.py migrate;
+      ./manage.py shell -c "from django.contrib.auth.models import User;
       User.objects.create_superuser(\"admin\", \"admin@example.com\", \"admin\")" > /dev/null 2>&1 || true;
-      ./manage.py runserver --settings=ansible_runserver.settings.dev 0.0.0.0:8000'
+      ./manage.py runserver 0.0.0.0:8000'
+    environment:
+      DJANGO_SETTINGS_MODULE: ansible_runserver.settings.dev
+    volumes:
+      - ./ansible_runserver/settings:/srv/ansible_runserver/settings
   process_jobs:
     image: ansible_runserver:latest
     depends_on:
@@ -56,8 +60,11 @@ services:
       - postgres
     networks:
       - default
-    command: /bin/bash -lc "sleep 10s; ./manage.py process_jobs --settings=ansible_runserver.settings.dev"
+    command: /bin/bash -lc "sleep 10s; ./manage.py process_jobs --dry-run"
+    environment:
+      DJANGO_SETTINGS_MODULE: ansible_runserver.settings.dev
     volumes:
+      - ./ansible_runserver/settings:/srv/ansible_runserver/settings
       - ansiblesite:/srv/ansiblesite
 volumes:
   ansiblesite:
