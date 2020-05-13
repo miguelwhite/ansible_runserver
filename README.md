@@ -17,7 +17,7 @@ docker-compose up
 The application should now be reachable at http://localhost:8000
 
 ### Local Dev
-Use the local settings module in `ansible_runserver/settings/local
+Use the local settings module in `ansible_runserver/settings/local`
 ```
 export DJANGO_SETTINGS_MODULE=ansible_runserver.settings.local
 ```
