@@ -47,7 +47,7 @@ class Playbook(models.Model):
         ])
 
     def __str__(self):
-        return '{} ({})'.format(self.name, self.id)
+        return '{} ({})'.format(self.name, self.uuid)
 
 
 class Tag(models.Model):
