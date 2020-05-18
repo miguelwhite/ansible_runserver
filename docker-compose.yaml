@@ -9,11 +9,11 @@ services:
     networks:
       - default
     environment:
-      POSTGRES_USER: arse
-      POSTGRES_PASSWORD: arse
-      POSTGRES_DB: arse_dev
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: local_dev
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U arse -w arse"]
+      test: ["CMD-SHELL", "pg_isready -U test -w test"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -49,7 +49,7 @@ services:
       User.objects.create_superuser(\"admin\", \"admin@example.com\", \"admin\")" > /dev/null 2>&1 || true;
       ./manage.py runserver 0.0.0.0:8000'
     environment:
-      DJANGO_SETTINGS_MODULE: ansible_runserver.settings.dev
+      DJANGO_SETTINGS_MODULE: ansible_runserver.settings.local
     volumes:
       - ./ansible_runserver/settings:/srv/ansible_runserver/settings
   process_jobs:
@@ -62,7 +62,7 @@ services:
       - default
     command: /bin/bash -lc "sleep 10s; ./manage.py process_jobs --dry-run"
     environment:
-      DJANGO_SETTINGS_MODULE: ansible_runserver.settings.dev
+      DJANGO_SETTINGS_MODULE: ansible_runserver.settings.local
     volumes:
       - ./ansible_runserver/settings:/srv/ansible_runserver/settings
       - ansiblesite:/srv/ansiblesite

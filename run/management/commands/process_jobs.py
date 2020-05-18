@@ -29,7 +29,8 @@ class SigtermHandler:
 class Command(BaseCommand):
     help = 'Process Job Daemon'
 
-    def _process_jobs(self, dry_run=False):
+    @staticmethod
+    def _process_jobs(dry_run=False):
         logging.info('Getting queued jobs')
         jobs = Job.objects.filter(status='NOT_STARTED').order_by('-created_on')
         if len(jobs) == 0:
