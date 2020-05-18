@@ -1,11 +1,11 @@
 from django.contrib.auth.models import User
+from django.conf import settings
 from rest_framework import authentication
 from rest_framework import exceptions
 import base64
 import json
 import requests
 import xmltodict
-from django.conf import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,24 +22,32 @@ class AwsIamAuthentication(authentication.BaseAuthentication):
         iam_value = arn.split(':')[5].split('/')[1]
         return 'arn:aws:iam::{}:{}/{}'.format(account_id, iam_type, iam_value)
 
-    def authenticate(self, request):
+    @staticmethod
+    def _retrieve_sts_response(auth_headers):
+        """Retrieves the CallerIdentity from AWS STS and returns the XML response"""
         endpoint = 'https://sts.amazonaws.com'
         request_parameters = 'Action=GetCallerIdentity&Version=2011-06-15'
-        headers = {
-            'x-amz-date': request.META.get('HTTP_X_AMZ_DATE'),
-            'x-amz-security-token': request.META.get('HTTP_X_AMZ_SECURITY_TOKEN'),
-            'Authorization': request.META.get('HTTP_AUTHORIZATION')
-        }
         request_url = endpoint + '?' + request_parameters
 
         try:
-            r = requests.get(request_url, headers=headers)
+            r = requests.get(request_url, headers=auth_headers)
             if r.status_code != 200:
                 message = xmltodict.parse(r.text)['ErrorResponse']['Error']['Message']
                 raise exceptions.AuthenticationFailed('Could not validate the Caller Identity. Error: {}'.format(message))
             result = xmltodict.parse(r.text)['GetCallerIdentityResponse']['GetCallerIdentityResult']
         except Exception as e:
             raise(e)
+
+        return result
+
+
+    def authenticate(self, request):
+        auth_headers = {
+            'x-amz-date': request.META.get('HTTP_X_AMZ_DATE'),
+            'x-amz-security-token': request.META.get('HTTP_X_AMZ_SECURITY_TOKEN'),
+            'Authorization': request.META.get('HTTP_AUTHORIZATION')
+        }
+        result = self._retrieve_sts_response(auth_headers)
 
         arn = self._parse_arn(result['Arn'])
 
@@ -49,11 +57,11 @@ class AwsIamAuthentication(authentication.BaseAuthentication):
                 try:
                     user = User.objects.get(username=u['username'])
                 except User.DoesNotExist as e:
-                    logger.debug("Mapped user '{}' does not exist".format(u['username'])) 
+                    logger.debug("Mapped user '{}' does not exist".format(u['username']))
                     raise exceptions.AuthenticationFailed('{} is not authorized.'.format(arn))
                 break
 
         if not user:
             raise exceptions.AuthenticationFailed('{} is not authorized.'.format(arn))
 
-        return (user, None)
+        return user

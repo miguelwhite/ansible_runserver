@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/civisanalytics/ansible_runserver
+    parallelism: 1
+    shell: /bin/bash --login
+    pre-steps:
+    - run:
+        name: Install Docker Compose
+        command: |
+          set -x
+          curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+    - checkout
+    - run:
+        name: Build and start docker-compose
+        command: >
+          docker-compose -f docker-compose.test.yaml -p ci build;
+          docker-compose -f docker-compose.test.yaml -p ci up -d;
+    steps:
+    - run:
+        name: Get logs and exit code of test container
+        command: >
+          docker logs ci_sut_1;
+          exit `docker wait ci_sut_1`

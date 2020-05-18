@@ -12,7 +12,9 @@ class Playbook(models.Model):
     filename = models.CharField(max_length=255)
     playbook_dir = models.CharField(max_length=255,
                                     default='playbooks', blank=True, null=True)
-    inventory = models.CharField(max_length=255)
+    inventory_filename = models.CharField(max_length=255)
+    inventory_dir = models.CharField(max_length=255,
+                                    default='inventories', blank=True, null=True)
     tags = models.ManyToManyField('Tag', blank=True)
     verbosity = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(4)],
@@ -37,8 +39,9 @@ class Playbook(models.Model):
         return ' '.join([
             '{}/ansible-playbook'.format(settings.ANSIBLE_BIN_DIR),
             vault_file,
-            '-i {}/inventories/{}'.format(
-                settings.ANSIBLE_PROJECT_DIR, self.inventory),
+            '-i {}/{}/{}'.format(
+                settings.ANSIBLE_PROJECT_DIR,
+                self.inventory_dir, self.inventory_filename),
             '{}/{}/{}'.format(
                 settings.ANSIBLE_PROJECT_DIR,
                 self.playbook_dir, self.filename),
